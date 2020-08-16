@@ -1,6 +1,9 @@
-name: songpopularity
+name: standupcomedy
 dependencies:
   - python=3.7
   - requests
   - beautifulsoup4
   - pandas
+  - nltk
+  - scikit-learn
+  - numpy

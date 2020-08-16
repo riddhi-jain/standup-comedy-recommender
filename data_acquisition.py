@@ -27,14 +27,21 @@ def get_all_comedy_transcript_elements():
 def parse_comedy_metadata(raw_title):
     """
     Attempts to parse comedian name, comedy special title, and year from raw text. Returns None if unable to parse
-    using that regular expression, indicating that it is a title for a non-standard comedy special.
+    using that regular expression, indicating that it is a title for a non-standard comedy special. Also returns None
+    if the transcript is not in English.
 
     :param str raw_title: Raw title containing multiple pieces of information from list of transcripts on page.
     :return: Metadata (Comedian name, comedy special title, and year performed).
     :rtype: dict
     """
+    # define standard regex matching format for comedy titles
     regex_matches = re.match(r'(.+):\s(.+)\s\((\d+)\)', raw_title)
-    if regex_matches is None:
+
+    # list of title tags that indicate that the transcript is not in english
+    foreign_language_tags = ['Testo italiano completo', 'Trascrizione italiana', 'Traduzione italiana',   # italian
+                             'Transcripción completa']                                                    # spanish
+
+    if (regex_matches is None) or any(word in raw_title for word in foreign_language_tags):
         return None
     else:
         return {
@@ -42,6 +49,21 @@ def parse_comedy_metadata(raw_title):
             'Title': regex_matches.group(2),
             'Year': int(regex_matches.group(3))
         }
+
+
+def format_metadata(raw_metadata):
+    """
+    Formats all text data in raw standup comedy metadata dataframe.
+
+    :param pandas.DataFrame raw_metadata: DataFrame containing columns: Comedian name, title, and year of performance.
+    :return: Processed DataFrame with same format as input.
+    """
+    # convert all text data to have only first letter capitalized
+    metadata = raw_metadata.copy()
+    metadata['Comedian'] = metadata['Comedian'].str.title()
+    metadata['Title'] = metadata['Title'].str.title()
+
+    return metadata
 
 
 def parse_comedy_transcript(transcript_url):
@@ -100,11 +122,12 @@ def scrape_comedy_transcripts():
     parsed_metadata, parsed_transcripts = parse_comedy_metadata_and_transcripts(comedy_transcript_elements)
 
     # create dataframes
-    df_metadata = pd.DataFrame(parsed_metadata)
+    df_raw_metadata = pd.DataFrame(parsed_metadata)
+    df_metadata = format_metadata(df_raw_metadata)
     df_transcripts = pd.DataFrame({'Text': parsed_transcripts})
 
     # pickle dataframes
-    df_metadata.to_pickle('data/raw_standup_comedy_metadata.pkl')
+    df_metadata.to_pickle('data/standup_comedy_metadata.pkl')
     df_transcripts.to_pickle('data/raw_standup_comedy_transcripts.pkl')
 
     print(f'{len(parsed_metadata)} comedy transcript data successfully acquired and saved.')
