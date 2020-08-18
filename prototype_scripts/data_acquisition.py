@@ -1,6 +1,7 @@
 """
 Contains functions for scraping stand-up comedy transcripts from https://scrapsfromtheloft.com/stand-up-comedy-scripts/.
-This file can be run as a script.
+If this file is run as a script, will scrape comedy transcripts, create 2 related dataframes (transcripts and metadata),
+and persist them to .pkl files in a local folder `data`.
 
 Stephen Kaplan, 2020-08-10
 """
@@ -8,6 +9,10 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import pandas as pd
+import string
+import json
+
+from app.instance.creds import OMDB_API_KEY
 
 
 def get_all_comedy_transcript_elements():
@@ -24,6 +29,38 @@ def get_all_comedy_transcript_elements():
     return list(parsing_results)
 
 
+def get_image_url(comedian, title, year):
+    """
+
+    :param comedian:
+    :param title:
+    :param year:
+    :return:
+    """
+    title_formatted = title.replace(' ', '+').replace("’", '%27').replace('.', '%2E')
+    comedian_formatted = comedian.replace(' ', '+').replace("’", '%27').replace('.', '%2E')
+
+    # manual title adjustments/mappings for consistency with others (incorrect name or title/comedian swapped)
+    title = 'Comedy Central Presents' if title == 'Comedy Central Special' else title
+    if comedian in ['The Standups', 'Comedy Central Presents']:
+        title_placeholder = comedian
+        comedian = title
+        title = title_placeholder
+
+    # search by both title and comedian in case one works and the other doesn't
+    response_title = requests.get(url=f'https://omdbapi.com/?t={title_formatted}&y={year}&apikey={OMDB_API_KEY}')
+    response_comedian = requests.get(url=f'https://omdbapi.com/?t={comedian_formatted}&y={year}&apikey={OMDB_API_KEY}')
+
+    if 'Poster' in json.loads(response_title.content):
+        image_url = json.loads(response_title.content)['Poster']
+    elif 'Poster' in json.loads(response_comedian.content):
+        image_url = json.loads(response_comedian.content)['Poster']
+    else:
+        image_url = f'static/images/{comedian} - {title}.jpg'
+
+    return image_url
+
+
 def parse_comedy_metadata(raw_title):
     """
     Attempts to parse comedian name, comedy special title, and year from raw text. Returns None if unable to parse
@@ -37,33 +74,24 @@ def parse_comedy_metadata(raw_title):
     # define standard regex matching format for comedy titles
     regex_matches = re.match(r'(.+):\s(.+)\s\((\d+)\)', raw_title)
 
-    # list of title tags that indicate that the transcript is not in english
-    foreign_language_tags = ['Testo italiano completo', 'Trascrizione italiana', 'Traduzione italiana',   # italian
-                             'Transcripción completa']                                                    # spanish
+    # list of title tags that indicate that the transcript is not in english or from a non-standard comedy special
+    removal_flags = ['Testo italiano completo', 'Trascrizione italiana', 'Traduzione italiana',     # Italian
+                     'Transcripción completa',                                                      # Spanish
+                     'Monologue', 'MONOLOGUE',                                                      # SNL / Monologues
+                     'Always Be Late', 'Dumb Americans', 'The Philadelphia Incident', 'The Berkeley Concert']   # Misc
 
-    if (regex_matches is None) or any(word in raw_title for word in foreign_language_tags):
+    if (regex_matches is None) or any(word in raw_title for word in removal_flags):
         return None
     else:
+        comedian = string.capwords(regex_matches.group(1))
+        title = string.capwords(regex_matches.group(2))
+        year = int(regex_matches.group(3))
         return {
-            'Comedian': regex_matches.group(1),
-            'Title': regex_matches.group(2),
-            'Year': int(regex_matches.group(3))
+            'Comedian': comedian,
+            'Title': title,
+            'Year': year,
+            'ImageURL': get_image_url(comedian, title, year)
         }
-
-
-def format_metadata(raw_metadata):
-    """
-    Formats all text data in raw standup comedy metadata dataframe.
-
-    :param pandas.DataFrame raw_metadata: DataFrame containing columns: Comedian name, title, and year of performance.
-    :return: Processed DataFrame with same format as input.
-    """
-    # convert all text data to have only first letter capitalized
-    metadata = raw_metadata.copy()
-    metadata['Comedian'] = metadata['Comedian'].str.title()
-    metadata['Title'] = metadata['Title'].str.title()
-
-    return metadata
 
 
 def parse_comedy_transcript(transcript_url):
@@ -122,8 +150,7 @@ def scrape_comedy_transcripts():
     parsed_metadata, parsed_transcripts = parse_comedy_metadata_and_transcripts(comedy_transcript_elements)
 
     # create dataframes
-    df_raw_metadata = pd.DataFrame(parsed_metadata)
-    df_metadata = format_metadata(df_raw_metadata)
+    df_metadata = pd.DataFrame(parsed_metadata)
     df_transcripts = pd.DataFrame({'Text': parsed_transcripts})
 
     # pickle dataframes

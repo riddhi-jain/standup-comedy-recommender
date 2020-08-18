@@ -9,6 +9,12 @@ import string
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import nltk
+import pickle
+
+from app.db import connect_to_mongo, load_mongo_collection_as_dataframe
+from app.creds import USERNAME, PWD
+
+
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -62,24 +68,10 @@ class TranscriptProcessingPipeline:
         """
         return [self.clean_document(document) for document in corpus]
 
-    def stem_document(self, document):
-        """
-
-        :param document:
-        :return:
-        """
-        tokenized_document = document.split()
-        stemmed_document = [self.stemmer.stem(word) for word in tokenized_document]
-
-        return ' '.join(stemmed_document)
-
     def lemmatize_document(self, document):
         tokenized_document = document.split()
         lemmatized_document = [self.lemmatizer.lemmatize(word) for word in tokenized_document]
         return ' '.join(lemmatized_document)
-
-    def stem_corpus(self, corpus):
-        return [self.stem_document(document) for document in corpus]
 
     def lemmatize_corpus(self, corpus):
         return [self.lemmatize_document(document) for document in corpus]
@@ -88,11 +80,9 @@ class TranscriptProcessingPipeline:
         # if a single string is provided, put it in a list
         corpus = corpus if isinstance(corpus, list) else list(corpus)
         cleaned_corpus = self.clean_corpus(corpus)
-        #stemmed_corpus = self.stem_corpus(cleaned_corpus)
         lemmatized_corpus = self.lemmatize_corpus(cleaned_corpus)
 
         return lemmatized_corpus
-        #return stemmed_corpus
 
     def fit_transform(self, corpus):
         preprocessed_corpus = self._preprocess_data(corpus)
@@ -103,7 +93,7 @@ class TranscriptProcessingPipeline:
 
     def transform(self, corpus):
         if not self._is_fit:
-            raise ValueError("Must fit the models before transforming!")
+            raise ValueError("Must fit the ml_models before transforming!")
 
         preprocessed_corpus = self._preprocess_data(corpus)
         vectorized_corpus = self.vectorizer.transform(preprocessed_corpus)
@@ -114,26 +104,39 @@ class TranscriptProcessingPipeline:
         self.tokenizer = tokenizer
         self.stemmer = stemmer()
         self.lemmatizer = lemmatizer()
-        self.vectorizer = vectorizer(stop_words='english', min_df=0.1, max_df=0.7) #ngram_range=(1, 2))
+        self.vectorizer = vectorizer(stop_words='english', min_df=0.1, max_df=0.7)
         self._is_fit = False
 
         self.stop_words = stop_words
         # have to append profanity to stop words, sorry!
-        self.stop_words.extend(['motherfucking', 'motherfucker', 'fuck', 'fucked', 'fucking', 'nigger', 'nigga',
+        self.stop_words.extend(['motherfucking', 'motherfucker', 'fuck', 'fucked', 'fucking', 'nigger', #'nigga',
                                 'cunt', 'hell', 'fuckin', "fuckin’", 'damn', 'shit', 'goddamn', 'bitch'])
         # add other random stop words that weren't captured
-        self.stop_words.extend(['yo', 'um', "’em", 'wanna', "ain’t", 'ha', 'ok', 'ah', 'sort', 'quite',
-                                'sir', 'literally', 'er', 'huh', 'dude'])
+        self.stop_words.extend(['yo', 'um', "’em", 'wanna', "ain’t", 'ha', 'ok', 'ah', 'sort', 'quite', 'awesome',
+                                'sir', 'literally', 'er', 'huh', 'dude', 'amazing', 'anymore', 'ya', 'alright',
+                                'totally'])
 
 
 if __name__ == "__main__":
-    raw_transcripts = pd.read_pickle('data/raw_standup_comedy_transcripts.pkl')
-    comedy_corpus = raw_transcripts['Text'].tolist()
-    pipeline = TranscriptProcessingPipeline(
+    db = connect_to_mongo(username=USERNAME, password=PWD)
+    df_transcripts = load_mongo_collection_as_dataframe(db, collection_name='transcripts')
+
+    pipeline_cv = TranscriptProcessingPipeline(
         tokenizer=nltk.word_tokenize,
         stemmer=nltk.stem.PorterStemmer,
         lemmatizer=nltk.stem.WordNetLemmatizer,
-        vectorizer=CountVectorizer#TfidfVectorizer
+        vectorizer=CountVectorizer  # TfidfVectorizer
     )
-    data = pipeline.fit_transform(comedy_corpus)
-    data.to_pickle('data/count_vectorized_standup_comedy_transcripts.pkl')
+    data_cv = pipeline_cv.fit_transform(df_transcripts['text'].to_list())
+    data_cv.to_pickle('data/count_vectorized_standup_comedy_transcripts.pkl')
+
+    pipeline_tfidf = TranscriptProcessingPipeline(
+        tokenizer=nltk.word_tokenize,
+        stemmer=nltk.stem.PorterStemmer,
+        lemmatizer=nltk.stem.WordNetLemmatizer,
+        vectorizer=TfidfVectorizer
+    )
+    data_tfidf = pipeline_tfidf.fit_transform(df_transcripts['text'].to_list())
+    data_tfidf.to_pickle('data/tfidf_standup_comedy_transcripts.pkl')
+
+    pickle.dump(pipeline_tfidf, open('../app/static/ml_models/tfidf_pipeline_20200818.pkl', 'wb'))
