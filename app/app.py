@@ -54,8 +54,8 @@ def search():
     search_term = request.form['search']
     if search_term != '':
         # put search term in same vector space as data model was trained on
-        search_transformed = PIPELINE.transform([search_term])
-
+        #search_transformed = PIPELINE.transform([search_term])
+        search_transformed = ''
         # put search in topic space
         search_topics = TOPIC_MODEL.transform(search_transformed)
 
