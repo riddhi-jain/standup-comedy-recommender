@@ -40,4 +40,4 @@ def load_mongo_collection_as_dataframe(db, collection_name, index_col='comedyId'
 
     df_collection = pd.DataFrame(collection_json)
 
-    return df_collection.set_index(index_col)
+    return df_collection
