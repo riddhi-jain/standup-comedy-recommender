@@ -18,7 +18,7 @@ METADATA = load_mongo_collection_as_dataframe(db=connect_to_mongo(USERNAME, PWD)
 THRESHOLD = 0.2
 
 # load NLP models
-#PIPELINE = pickle.load(open('app/static/ml_models/tfidf_pipeline.pkl', 'rb'))
+PIPELINE = pickle.load(open('app/static/ml_models/tfidf_pipeline.pkl', 'rb'))
 TOPIC_MODEL = joblib.load('app/static/ml_models/tfidf_nmf_model.pkl')
 
 
@@ -54,8 +54,7 @@ def search():
     search_term = request.form['search']
     if search_term != '':
         # put search term in same vector space as data model was trained on
-        #search_transformed = PIPELINE.transform([search_term])
-        search_transformed = ''
+        search_transformed = PIPELINE.transform([search_term])
         # put search in topic space
         search_topics = TOPIC_MODEL.transform(search_transformed)
 
