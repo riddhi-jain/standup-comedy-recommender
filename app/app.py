@@ -4,9 +4,9 @@ import dill as pickle
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
-from db import load_mongo_collection_as_dataframe, connect_to_mongo
-from creds import USERNAME, PWD
-from nlp_pipeline import TranscriptProcessingPipeline
+from app.db import load_mongo_collection_as_dataframe, connect_to_mongo
+from app.creds import USERNAME, PWD
+from analysis.nlp_pipeline import TranscriptProcessingPipeline
 
 
 # initialize flask app
