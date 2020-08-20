@@ -6,6 +6,8 @@ import numpy as np
 
 from app.db import load_mongo_collection_as_dataframe, connect_to_mongo
 from app.creds import USERNAME, PWD
+import sys
+sys.path.append('/home/ubuntu/standup-comedy-recommender/app/nlp_pipeline.py')
 
 
 # initialize flask app
