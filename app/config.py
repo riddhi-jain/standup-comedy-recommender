@@ -1,2 +1,2 @@
-ENVIRONMENT = 'development'     # for production, 'production'
-DEBUG = True                    # for production, False
+ENVIRONMENT = 'production'     # for production, 'production'
+DEBUG = False                    # for production, False
