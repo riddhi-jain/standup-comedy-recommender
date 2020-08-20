@@ -6,7 +6,7 @@ import numpy as np
 
 from app.db import load_mongo_collection_as_dataframe, connect_to_mongo
 from app.creds import USERNAME, PWD
-from app.nlp_pipeline import TranscriptProcessingPipeline
+import nlp_pipeline
 
 
 # initialize flask app
