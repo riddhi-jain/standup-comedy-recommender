@@ -1,4 +1,4 @@
-# standup-comedy-recommender
+# Stand-up Comedy Recommender
 
 This standup-comedy recommender is 100% powered by Natural Language Processing (NLP) techniques & unsupervised
 machine learning algorithms. None of the topics assigned to each comedy special were hard-coded; they were
