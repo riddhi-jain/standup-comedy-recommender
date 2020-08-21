@@ -7,7 +7,7 @@ import numpy as np
 from db import load_mongo_collection_as_dataframe, connect_to_mongo
 from creds import USERNAME, PWD
 
-from app import nlp_pipeline
+import nlp_pipeline
 import sys
 sys.modules['nlp_pipeline'] = nlp_pipeline
 
