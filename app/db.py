@@ -10,7 +10,7 @@ import pandas as pd
 from pymongo import MongoClient
 
 
-def connect_to_mongo(username, password, db_name='standupComedyDB', public_ip='3.135.162.72'):
+def connect_to_mongo(username, password, db_name='standupComedyDB', public_ip='3.131.91.48'):
     """
 
     :return:
