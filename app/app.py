@@ -21,8 +21,8 @@ METADATA = load_mongo_collection_as_dataframe(db=connect_to_mongo(USERNAME, PWD)
 THRESHOLD = 0.2
 
 # load NLP models
-PIPELINE = pickle.load(open('static/ml_models/tfidf_pipeline.pkl', 'rb'))
-TOPIC_MODEL = joblib.load('static/ml_models/tfidf_nmf_model.pkl')
+PIPELINE = pickle.load(open('app/static/ml_models/tfidf_pipeline.pkl', 'rb'))
+TOPIC_MODEL = joblib.load('app/static/ml_models/tfidf_nmf_model.pkl')
 
 
 @app.route('/')
