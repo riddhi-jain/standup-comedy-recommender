@@ -49,7 +49,7 @@ is calculated between the search term topic space and the topic space for every 
 the top 10 most similar comedy specials are displayed as a recommendation.
 </p>
 
-<h4>Data Sources</h4>
+#### Data Sources
 * Comedy Transcripts - [Scraps From The Loft](https://scrapsfromtheloft.com/stand-up-comedy-scripts/)
 * Comedy Special Poster Images - [OMDB API](https://www.omdbapi.com/)
 
