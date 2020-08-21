@@ -14,6 +14,80 @@ import json
 
 from app.creds import OMDB_API_KEY
 
+MANUAL_IMAGE_REPLACEMENTS = {
+    "Patton Oswalt - I Love Everything": "https://m.media-amazon.com/images/M/MV5BNTAxNDk5OTMtNDZiYy00NDc5LWJmYTgt"
+                                         "OWM4NTg3MDIyZTg4XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+    "Russell Peters - Deported": "https://m.media-amazon.com/images/M/MV5BNDY1ZjJkZjUtNGY3Ni00NjQwLTk3ZmUtOWE5ZWNk"
+                                 "YTNhYWE5XkEyXkFqcGdeQXVyMTExMTc4Mjk1._V1_.jpg",
+    "Jo Koy - Lights Out": "https://images-na.ssl-images-amazon.com/images/I/71e6MG0piFL._RI_.jpg",
+    "Lee Mack - Live": "https://images-na.ssl-images-amazon.com/images/I/81ak-ugJICL._SL1500_.jpg",
+    "Daniel Sloss - X": "https://images-na.ssl-images-amazon.com/images/I/61HRMusU9sL._RI_.jpg",
+    "Pete Davidson - SMD": "https://images-na.ssl-images-amazon.com/images/I/91pKSaY4URL._RI_.jpg",
+    "Sara Pascoe - LadsLadsLads": "https://a.ltrbxd.com/resized/film-poster/5/2/3/0/0/5/523005-sara-pascoe-live-"
+                                  "ladsladslads-0-230-0-345-crop.jpg",
+    "Emily Heller - Ice Thickeners": "https://streaming-engine-assets.rftslb.com/posters/image/image/"
+                                     "1011500/list_page_main.jpg",
+    "Wanda Sykes - Not Normal": "https://m.media-amazon.com/images/M/MV5BOGZlNTQ0MjQtMDBmMi00OGQ2LTlmODUtMTI1ZGI5ZT"
+                                "AzY2ZkXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+    "Kevin Hart - Irresponsible": "https://occ-0-1009-1001.1.nflxso.net/dnm/api/v6/XsrytRUxks8BtTRf9HNlZkW2tvY/AAA"
+                                  "ABTWNtRGyj4ZvPpmE65-1It9FyHDM10rOx61M9P99MVKR66M7yMol6XTmliZHCyX02dhkmuRlbfK_Dc"
+                                  "d9m-ytIn0EX-hMjBmyAA.jpg",
+    "Ellen Degeneres - Relatable": "https://occ-0-1001-999.1.nflxso.net/art/58afa/e8a9f3db123a9f2318cf76283d2d66c"
+                                   "6d5858afa.jpg",
+    "Vir Das - Losing It": "https://m.media-amazon.com/images/M/MV5BZWFhNmFjMzQtZDE4OS00MjY2LWJlMTktN2UzYjk5Zjk5Nz"
+                           "U2XkEyXkFqcGdeQXVyNjI0MDg2NzE@._V1_.jpg",
+    "Mo Amer - The Vagabond": "https://img.reelgood.com/content/movie/8829a6d0-6fcc-4825-862e-16e8a29"
+                              "ce116/poster-780.jpg",
+    "Joe Rogan - Strange Times": "https://m.media-amazon.com/images/M/MV5BNzc2Mzg5YmMtMzM1NC00NDgwLTljYWQtZDdkNzB"
+                                 "mNjZkNmJhXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+    "Daniel Sloss - Dark": "https://pbs.twimg.com/media/DoPUGEnWkAA3IlM.jpg",
+    "Daniel Sloss - Jigsaw": "https://pbs.twimg.com/media/DoPUGEnWkAA3IlM.jpg",
+    "Daniel Tosh - Comedy Central Presents": "https://image.tmdb.org/t/p/w500/223LsiI29uOQpdN32QdeMTfmB5R.jpg",
+    "Dave Chappelle - HBO Comedy Half-Hour": "https://i.pinimg.com/originals/fa/0c/1e/fa0c1e2ae6e175c6fd"
+                                             "6469453b5476d2.jpg",
+    "Brad Williams - Daddy Issues": "https://images-na.ssl-images-amazon.com/images/I/81eQG-LuvML._SL1500_.jpg",
+    "Maria Bamford - Old Baby": "https://comedydynamics.com/wp-content/uploads/2019/02/Maria-Bamford-Old-V.jpg",
+    "Russell Peters - Outsourced": "https://images-na.ssl-images-amazon.com/images/I/81pa6vYuLZL._SL1500_.jpg",
+    "Nikki Glaser - Perfect": "https://img.reelgood.com/content/movie/8bfbe764-cd5c-4332-a15c-439446"
+                              "148071/poster-780.jpg",
+    "Ricky Gervais - Humanity": "https://m.media-amazon.com/images/M/MV5BZTgxZGRhY2EtNzg0OC00ODA2LWFhM2ItZmRmYW"
+                                "Y5NGI4MGRhXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+    "Brian Regan - Standing Up": "https://m.media-amazon.com/images/M/MV5BMTYyNDE3NTc2Nl5BMl5BanBnXkFtZT"
+                                 "cwODM4MzA1MQ@@._V1_.jpg",
+    "Chris Tucker - Live": "https://m.media-amazon.com/images/M/MV5BMTU1MzU2Njg2MF5BMl5BanBnXkFtZTgwNTM"
+                           "0MzgxNjE@._V1_.jpg",
+    "Ellen Degeneres - The Beginning": "https://images-na.ssl-images-amazon.com/images/I/91blTMH3l6L._RI_.jpg",
+    "Maz Jobrani - Immigrant": "https://m.media-amazon.com/images/M/MV5BMmI0MTBlNzktZDJlNC00OGE1LTgwNGUtODllOG"
+                               "E4OTQyNTY1XkEyXkFqcGdeQXVyMTk2ODU0OTM@._V1_.jpg",
+    "Whitney Cummings - I Love You": "https://images-na.ssl-images-amazon.com/images/I/61rcd3l1XuL.jpg",
+    "Patton Oswalt - Annihilation": "https://m.media-amazon.com/images/M/MV5BZGE4NDVjZGQtNzc0Yi00YTE2LWFiN2EtYTNi"
+                                    "Y2ZiNjliYWQ1XkEyXkFqcGdeQXVyMTk3NDAwMzI@._V1_.jpg",
+    "Chris Rock - Bigger & Blacker": "https://m.media-amazon.com/images/M/MV5BODQzOWExYjktZDQ2OC00YTA5LWI3YzctMDFjN"
+                                     "jc3ZTM5NTA0XkEyXkFqcGdeQXVyMTk3NDAwMzI@._V1_.jpg",
+    "Erik Griffin - The Ugly Truth": "https://m.media-amazon.com/images/M/MV5BZmU0NjNhY2ItMzg3ZC00ZTM4LTliMjgtZm"
+                                     "YzYWM4YTU2YmVkXkEyXkFqcGdeQXVyNTM3MDMyMDQ@._V1_.jpg",
+    "Norm Macdonald - One Night Stand": "https://images-na.ssl-images-amazon.com/images/S/pv-target-images/4131b"
+                                        "f9a3627ab6cec0dd57d335447ddc9a5f60b2ec0a39a83b4e0f60e09470e._V_SX300_.jpg",
+    "Dylan Moran - Off the Hook": "https://images-na.ssl-images-amazon.com/images/I/A1l-Gzb8dkL._RI_.jpg",
+    "Richard Pryor - Live & Smokin’": "https://occ-0-116-114.1.nflxso.net/art/5be58/0268fffdd24c4843e88d761b96fb"
+                                      "588f6435be58.jpg",
+    "Joe Rogan - Triggered": "https://m.media-amazon.com/images/M/MV5BMGM5NjlmZTgtMTgyZS00MGQ2LTgyNDQtM2EzZTU2N"
+                             "WUzMzJhXkEyXkFqcGdeQXVyNjU2MTA3OTY@._V1_SX666_CR0,0,666,999_AL_.jpg",
+    "Trevor Noah - Lost in Translation": "https://images.justwatch.com/poster/11654253/s592",
+    "Bo Burnham - What": "https://pm1.narvii.com/6824/e64b4478b14bc98e1bdac09664b5d5bb01c5a51bv2_00.jpg",
+    "John Mulaney - The Comeback Kid": "https://m.media-amazon.com/images/M/MV5BMDQ3NjU0NmQtYjgyZS00MzIzLWJjND"
+                                       "EtMWY5YjczYjc0MTMyXkEyXkFqcGdeQXVyMjI0MjUyNTc@._V1_.jpg",
+    "Bill Hicks - Revelations": "https://m.media-amazon.com/images/M/MV5BMjM1OTAwMDE3N15BMl5BanBnXkFtZTgwNjkz"
+                                "MzYwNzE@._V1_.jpg",
+    "George Carlin - Again!": "https://images-na.ssl-images-amazon.com/images/I/71c-BlpoKiL._RI_.jpg",
+    "Louis C.K. - Hilarious": "https://images-na.ssl-images-amazon.com/images/I/51cTzhJbsuL._AC_SY445_.jpg",
+    "Louis C.K. - Shameless": "https://images-na.ssl-images-amazon.com/images/I/61s1KHMPyOL.jpg",
+    "Louis C.K. - Oh My God": "https://images-na.ssl-images-amazon.com/images/I/81yIHMSddAL._RI_.jpg",
+    "Patrice O’Neal": "https://images-na.ssl-images-amazon.com/images/I/61mGKbweejL._SL1260_.jpg",
+    "Jim Jefferies - Bare": "https://m.media-amazon.com/images/M/MV5BMmRlNDE0ZDctZTMwYi00MWQ2LTk2MzctNjdjODM0YW"
+                            "Y1MjNmXkEyXkFqcGdeQXVyMjI0MjUyNTc@._V1_.jpg"
+}
+
 
 def get_all_comedy_transcript_elements():
     """
@@ -31,60 +105,16 @@ def get_all_comedy_transcript_elements():
 
 def get_image_url(comedian, title, year):
     """
+    Returns a public URL to the "movie poster" for a given comedy special. Due to the inconsistency in availability
+    of these images, this function tries a few methods: Searches the OMDB API by title, searches the OMDB API by
+    comedian, checks the static/images directory, and checks a lookup table containing image URLs.
 
-    :param comedian:
-    :param title:
-    :param year:
-    :return:
+    :param str comedian: Name of the comedian.
+    :param title: Title of the stand-up comedy special
+    :param year: Release year for the standup comedy special.
+    :return: Public URL to a relevant movie poster/graphic for the comedy special.
+    :rtype: str
     """
-    manual_image_replacements = {
-        "Patton Oswalt - I Love Everything": "https://m.media-amazon.com/images/M/MV5BNTAxNDk5OTMtNDZiYy00NDc5LWJmYTgtOWM4NTg3MDIyZTg4XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
-        "Russell Peters - Deported": "https://m.media-amazon.com/images/M/MV5BNDY1ZjJkZjUtNGY3Ni00NjQwLTk3ZmUtOWE5ZWNkYTNhYWE5XkEyXkFqcGdeQXVyMTExMTc4Mjk1._V1_.jpg",
-        "Jo Koy - Lights Out": "https://images-na.ssl-images-amazon.com/images/I/71e6MG0piFL._RI_.jpg",
-        "Lee Mack - Live": "https://images-na.ssl-images-amazon.com/images/I/81ak-ugJICL._SL1500_.jpg",
-        "Daniel Sloss - X": "https://images-na.ssl-images-amazon.com/images/I/61HRMusU9sL._RI_.jpg",
-        "Pete Davidson - SMD": "https://images-na.ssl-images-amazon.com/images/I/91pKSaY4URL._RI_.jpg",
-        "Sara Pascoe - LadsLadsLads": "https://a.ltrbxd.com/resized/film-poster/5/2/3/0/0/5/523005-sara-pascoe-live-ladsladslads-0-230-0-345-crop.jpg",
-        "Emily Heller - Ice Thickeners": "https://streaming-engine-assets.rftslb.com/posters/image/image/1011500/list_page_main.jpg",
-        "Wanda Sykes - Not Normal": "https://m.media-amazon.com/images/M/MV5BOGZlNTQ0MjQtMDBmMi00OGQ2LTlmODUtMTI1ZGI5ZTAzY2ZkXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
-        "Kevin Hart - Irresponsible": "https://occ-0-1009-1001.1.nflxso.net/dnm/api/v6/XsrytRUxks8BtTRf9HNlZkW2tvY/AAAABTWNtRGyj4ZvPpmE65-1It9FyHDM10rOx61M9P99MVKR66M7yMol6XTmliZHCyX02dhkmuRlbfK_Dcd9m-ytIn0EX-hMjBmyAA.jpg",
-        "Ellen Degeneres - Relatable": "https://occ-0-1001-999.1.nflxso.net/art/58afa/e8a9f3db123a9f2318cf76283d2d66c6d5858afa.jpg",
-        "Vir Das - Losing It": "https://m.media-amazon.com/images/M/MV5BZWFhNmFjMzQtZDE4OS00MjY2LWJlMTktN2UzYjk5Zjk5NzU2XkEyXkFqcGdeQXVyNjI0MDg2NzE@._V1_.jpg",
-        "Mo Amer - The Vagabond": "https://img.reelgood.com/content/movie/8829a6d0-6fcc-4825-862e-16e8a29ce116/poster-780.jpg",
-        "Joe Rogan - Strange Times": "https://m.media-amazon.com/images/M/MV5BNzc2Mzg5YmMtMzM1NC00NDgwLTljYWQtZDdkNzBmNjZkNmJhXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
-        "Daniel Sloss - Dark": "https://pbs.twimg.com/media/DoPUGEnWkAA3IlM.jpg",
-        "Daniel Sloss - Jigsaw": "https://pbs.twimg.com/media/DoPUGEnWkAA3IlM.jpg",
-        "Daniel Tosh - Comedy Central Presents": "https://image.tmdb.org/t/p/w500/223LsiI29uOQpdN32QdeMTfmB5R.jpg",
-        "Dave Chappelle - HBO Comedy Half-Hour": "https://i.pinimg.com/originals/fa/0c/1e/fa0c1e2ae6e175c6fd6469453b5476d2.jpg",
-        "Brad Williams - Daddy Issues": "https://images-na.ssl-images-amazon.com/images/I/81eQG-LuvML._SL1500_.jpg",
-        "Maria Bamford - Old Baby": "https://comedydynamics.com/wp-content/uploads/2019/02/Maria-Bamford-Old-V.jpg",
-        "Russell Peters - Outsourced": "https://images-na.ssl-images-amazon.com/images/I/81pa6vYuLZL._SL1500_.jpg",
-        "Nikki Glaser - Perfect": "https://img.reelgood.com/content/movie/8bfbe764-cd5c-4332-a15c-439446148071/poster-780.jpg",
-        "Ricky Gervais - Humanity": "https://m.media-amazon.com/images/M/MV5BZTgxZGRhY2EtNzg0OC00ODA2LWFhM2ItZmRmYWY5NGI4MGRhXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
-        "Brian Regan - Standing Up": "https://m.media-amazon.com/images/M/MV5BMTYyNDE3NTc2Nl5BMl5BanBnXkFtZTcwODM4MzA1MQ@@._V1_.jpg",
-        "Chris Tucker - Live": "https://m.media-amazon.com/images/M/MV5BMTU1MzU2Njg2MF5BMl5BanBnXkFtZTgwNTM0MzgxNjE@._V1_.jpg",
-        "Ellen Degeneres - The Beginning": "https://images-na.ssl-images-amazon.com/images/I/91blTMH3l6L._RI_.jpg",
-        "Maz Jobrani - Immigrant": "https://m.media-amazon.com/images/M/MV5BMmI0MTBlNzktZDJlNC00OGE1LTgwNGUtODllOGE4OTQyNTY1XkEyXkFqcGdeQXVyMTk2ODU0OTM@._V1_.jpg",
-        "Whitney Cummings - I Love You": "https://images-na.ssl-images-amazon.com/images/I/61rcd3l1XuL.jpg",
-        "Patton Oswalt - Annihilation": "https://m.media-amazon.com/images/M/MV5BZGE4NDVjZGQtNzc0Yi00YTE2LWFiN2EtYTNiY2ZiNjliYWQ1XkEyXkFqcGdeQXVyMTk3NDAwMzI@._V1_.jpg",
-        "Chris Rock - Bigger & Blacker": "https://m.media-amazon.com/images/M/MV5BODQzOWExYjktZDQ2OC00YTA5LWI3YzctMDFjNjc3ZTM5NTA0XkEyXkFqcGdeQXVyMTk3NDAwMzI@._V1_.jpg",
-        "Erik Griffin - The Ugly Truth": "https://m.media-amazon.com/images/M/MV5BZmU0NjNhY2ItMzg3ZC00ZTM4LTliMjgtZmYzYWM4YTU2YmVkXkEyXkFqcGdeQXVyNTM3MDMyMDQ@._V1_.jpg",
-        "Norm Macdonald - One Night Stand": "https://images-na.ssl-images-amazon.com/images/S/pv-target-images/4131bf9a3627ab6cec0dd57d335447ddc9a5f60b2ec0a39a83b4e0f60e09470e._V_SX300_.jpg",
-        "Dylan Moran - Off the Hook": "https://images-na.ssl-images-amazon.com/images/I/A1l-Gzb8dkL._RI_.jpg",
-        "Richard Pryor - Live & Smokin’": "https://occ-0-116-114.1.nflxso.net/art/5be58/0268fffdd24c4843e88d761b96fb588f6435be58.jpg",
-        "Joe Rogan - Triggered": "https://m.media-amazon.com/images/M/MV5BMGM5NjlmZTgtMTgyZS00MGQ2LTgyNDQtM2EzZTU2NWUzMzJhXkEyXkFqcGdeQXVyNjU2MTA3OTY@._V1_SX666_CR0,0,666,999_AL_.jpg",
-        "Trevor Noah - Lost in Translation": "https://images.justwatch.com/poster/11654253/s592",
-        "Bo Burnham - What": "https://pm1.narvii.com/6824/e64b4478b14bc98e1bdac09664b5d5bb01c5a51bv2_00.jpg",
-        "John Mulaney - The Comeback Kid": "https://m.media-amazon.com/images/M/MV5BMDQ3NjU0NmQtYjgyZS00MzIzLWJjNDEtMWY5YjczYjc0MTMyXkEyXkFqcGdeQXVyMjI0MjUyNTc@._V1_.jpg",
-        "Bill Hicks - Revelations": "https://m.media-amazon.com/images/M/MV5BMjM1OTAwMDE3N15BMl5BanBnXkFtZTgwNjkzMzYwNzE@._V1_.jpg",
-        "George Carlin - Again!": "https://images-na.ssl-images-amazon.com/images/I/71c-BlpoKiL._RI_.jpg",
-        "Louis C.K. - Hilarious": "https://images-na.ssl-images-amazon.com/images/I/51cTzhJbsuL._AC_SY445_.jpg",
-        "Louis C.K. - Shameless": "https://images-na.ssl-images-amazon.com/images/I/61s1KHMPyOL.jpg",
-        "Louis C.K. - Oh My God": "https://images-na.ssl-images-amazon.com/images/I/81yIHMSddAL._RI_.jpg",
-        "Patrice O’Neal": "https://images-na.ssl-images-amazon.com/images/I/61mGKbweejL._SL1260_.jpg",
-        "Jim Jefferies - Bare": "https://m.media-amazon.com/images/M/MV5BMmRlNDE0ZDctZTMwYi00MWQ2LTk2MzctNjdjODM0YWY1MjNmXkEyXkFqcGdeQXVyMjI0MjUyNTc@._V1_.jpg"
-    }
-
     title_formatted = title.replace(' ', '+').replace("’", '%27').replace('.', '%2E')
     comedian_formatted = comedian.replace(' ', '+').replace("’", '%27').replace('.', '%2E')
 
@@ -94,7 +124,7 @@ def get_image_url(comedian, title, year):
 
     # insert image URL manually if in lookup table above
     try:
-        image_url = manual_image_replacements[f'{comedian} - {title}']
+        image_url = MANUAL_IMAGE_REPLACEMENTS[f'{comedian} - {title}']
     except KeyError:
         if 'Poster' in json.loads(response_title.content):                  # try searching OMDB API with title
             image_url = json.loads(response_title.content)['Poster']
@@ -108,11 +138,14 @@ def get_image_url(comedian, title, year):
 
 def replace_if_title_does_not_begin_with(text, incorrect_fragment, replacement):
     """
+    A wrapper for the str.replace() function that only replaces the text fragment if the input string does NOT
+    begin with the fragment.
 
-    :param text:
-    :param incorrect_fragment:
-    :param replacement:
-    :return:
+    :param str text: Text to modify.
+    :param incorrect_fragment: Text fragment to replace.
+    :param replacement: Replacement text fragment.
+    :return: Modified text.
+    :rtype: str
     """
     if text[:len(incorrect_fragment)] != incorrect_fragment:
         text = text.replace(incorrect_fragment, replacement)
