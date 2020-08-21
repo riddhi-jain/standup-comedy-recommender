@@ -38,7 +38,7 @@ def index():
 
     return render_template('index.html',
                            comedy_info=metadata.values.tolist(),
-                           dropdown_options=['Observational', 'Black Culture', 'British & Australian',
+                           dropdown_options=['Observational', 'The Black Experience', 'British & Australian',
                                              'Political', 'Immigrant Upbringing', 'Relationships & Sex'],
                            search_text='')
 
