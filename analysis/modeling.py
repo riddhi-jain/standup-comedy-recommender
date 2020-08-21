@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     # use top words to decide on topic categories
     top_words = get_top_words(word_topic)
-    topic_names = ['observational', 'blackCulture', 'britishAustralian',
+    topic_names = ['observational', 'theBlackExperience', 'britishAustralian',
                    'political', 'immigrantUpbringing', 'relationshipsSex']
     doc_topic.columns = topic_names
 
