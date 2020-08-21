@@ -13,7 +13,6 @@ sys.modules['nlp_pipeline'] = nlp_pipeline
 
 # initialize flask app
 app = Flask(__name__, static_folder='static', template_folder='templates')
-#app.config.from_object('app.config.ProductionConfig')
 app.config.from_object('app.config.ProductionConfig')
 
 # load metadata from mongo and convert topic weights to topic booleans based on threshold
