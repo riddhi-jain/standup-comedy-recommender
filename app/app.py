@@ -24,16 +24,30 @@ PIPELINE = pickle.load(open('app/static/ml_models/tfidf_pipeline.pkl', 'rb'))
 TOPIC_MODEL = joblib.load('app/static/ml_models/tfidf_nmf_model.pkl')
 
 
+def apply_threshold_to_topics(data):
+    """
+    Converts topic weights in metadata to string representation of boolean. If topic weight is above the threshold, then
+    the document is considered to be a member of that topic.
+
+    :param pandas.DataFrame data: Metadata pandas dataframe, where columns 6 through the last column each represent a
+                                  topic and contain topic weights for each document.
+    :return: Dataframe with topic weight columns converted to boolean in string form ('1', '0').
+    :rtype: pandas.DataFrame
+    """
+    for col in data.columns[6:]:
+        data[col] = data[col] > THRESHOLD
+        data[col].replace(True, '1', inplace=True)
+        data[col].replace(False, '0', inplace=True)
+
+    return data
+
+
 @app.route('/')
 def index():
     """
     Loads initial home page.
     """
-    metadata = METADATA.copy()
-    for col in metadata.columns[6:]:
-        metadata[col] = metadata[col] > THRESHOLD
-        metadata[col].replace(True, '1', inplace=True)
-        metadata[col].replace(False, '0', inplace=True)
+    metadata = apply_threshold_to_topics(METADATA.copy())
 
     return render_template('index.html',
                            comedy_info=metadata.values.tolist(),
@@ -42,18 +56,16 @@ def index():
                            search_text='')
 
 
-# Reshape cards list
-
 @app.route('/search', methods=['POST'])
 def search():
     """
-    Sort
-
-    :return:
+    Finds comedy specials similar to the search term entered by the user.
     """
     metadata = METADATA.copy()
 
+    # extract search term from the HTML form
     search_term = request.form['search']
+
     if search_term != '':
         # put search term in same vector space as data model was trained on
         search_transformed = PIPELINE.transform([search_term])
@@ -66,10 +78,7 @@ def search():
         top_10_idx = np.argsort(similarity.flatten())[-10:]
         metadata = metadata.iloc[list(top_10_idx)]
 
-    for col in metadata.columns[6:]:
-        metadata[col] = metadata[col] > THRESHOLD
-        metadata[col].replace(True, '1', inplace=True)
-        metadata[col].replace(False, '0', inplace=True)
+    metadata = apply_threshold_to_topics(metadata)
 
     return render_template('index.html',
                            comedy_info=metadata.values.tolist(),

@@ -155,10 +155,13 @@ def replace_if_title_does_not_begin_with(text, incorrect_fragment, replacement):
 
 def custom_format(comedian, title):
     """
+    Performs custom transformations and mappings to text such as lowercase for certain words and other formatting
+    corrections.
 
-    :param comedian:
-    :param title:
-    :return:
+    :param str comedian: Comedian names.
+    :param str title: Comedy special title.
+    :return: The transformed comedian name and comedy special title.
+    :rtype: tuple
     """
     # swap comedian and title for special cases
     if comedian in ['The Standups', 'Comedy Central Presents']:

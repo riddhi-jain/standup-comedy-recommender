@@ -3,6 +3,10 @@ import string
 import pandas as pd
 import nltk
 
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+
 
 class TranscriptProcessingPipeline:
     """
@@ -11,10 +15,13 @@ class TranscriptProcessingPipeline:
     """
     def remove_stop_words(self, document):
         """
+        Removes common english stop words (and any other words appended to the stop words from a string of text.)
 
-        :param document:
-        :return:
+        :param str document: Text document
+        :return: Text with stop words removed.
+        :rtype: str
         """
+        # split string into list of words and filter out stop words
         words = document.split()
         words_without_stops = [word for word in words if word not in self.stop_words]
 
@@ -22,15 +29,18 @@ class TranscriptProcessingPipeline:
 
     def clean_document(self, document):
         """
+        Performs a handful of text cleaning steps as detailed in the comments below. Makes two passes of removing the
+        stop words.
 
-        :param document:
-        :return:
+        :param str document: Text document.
+        :return: Cleaned text with stop words removed.
+        :rtype: str
         """
         # first pass of removing common english words and profanity
         cleaned_document = self.remove_stop_words(document)
 
         # clean unwanted words and characters
-        cleaned_document = cleaned_document.lower()                                     # lower case
+        cleaned_document = cleaned_document.lower()                            # lower case
         cleaned_document = re.sub(r'\[.*?\]', '', cleaned_document)            # text between brackets (meta-notes)
         cleaned_document = re.sub(r'\(.*?\)', '', cleaned_document)            # text between parenthesis
         cleaned_document = re.sub(r'[%s]' % re.escape(string.punctuation), ' ', cleaned_document)   # punctuation
@@ -39,37 +49,69 @@ class TranscriptProcessingPipeline:
         cleaned_document = re.sub('[“”…]', '', cleaned_document)                                    # quotes
         cleaned_document = re.sub(r'\–', '', cleaned_document)                                      # hyphens
         cleaned_document = re.sub('\n', '', cleaned_document)                                       # line breaks
-        cleaned_document = re.sub(r'\w*((\w)\2{2,})\w*', '', cleaned_document)  # remove crazy expressions like "aaahhh"
+        cleaned_document = re.sub(r'\w*((\w)\2{2,})\w*', '', cleaned_document)  # remove crazy expressions like "aaahh"
 
         # second pass of stop words and return
         return self.remove_stop_words(cleaned_document)
 
     def clean_corpus(self, corpus):
         """
+        Iterates through and cleans each document in the corpus.
 
-        :param list corpus:
-        :return:
+        :param list corpus: List of strings containing each document.
+        :return: Cleaned corpus
+        :rtype: list
         """
         return [self.clean_document(document) for document in corpus]
 
     def lemmatize_document(self, document):
+        """
+        Removes variants of each root word in the document. Allows for words like "run" and "running" to be counted as
+        one word with one general meaning.
+
+        :param str document: Text document.
+        :return: Lemmatized document.
+        :rtype str
+        """
+        # split text into words and iterate through, lemmatizing each word if necessary
         tokenized_document = document.split()
         lemmatized_document = [self.lemmatizer.lemmatize(word) if word not in self.lemmatizer_stop_words else word
                                for word in tokenized_document]
         return ' '.join(lemmatized_document)
 
     def lemmatize_corpus(self, corpus):
+        """
+        Iterates through and lemmatizes words in each document in the corpus.
+
+        :param list corpus: List of strings containing each document.
+        :return: Lemmatized corpus
+        :rtype: list
+        """
         return [self.lemmatize_document(document) for document in corpus]
 
     def _preprocess_data(self, corpus):
+        """
+        Performs preprocessing steps on data.
+
+        :param list corpus: List of strings containing each document.
+        :return:
+        """
         # if a single string is provided, put it in a list
         corpus = corpus if isinstance(corpus, list) else list(corpus)
+
         cleaned_corpus = self.clean_corpus(corpus)
         lemmatized_corpus = self.lemmatize_corpus(cleaned_corpus)
 
         return lemmatized_corpus
 
     def fit_transform(self, corpus):
+        """
+        Preprocess data, fit the vectorizer, and return the resulting vectorized corpus.
+
+        :param list corpus: List of strings each containing a document.
+        :return: Prepared and vectorized corpus for use in modeling.
+        :rtype: pandas.DataFrame
+        """
         preprocessed_corpus = self._preprocess_data(corpus)
         vectorized_corpus = self.vectorizer.fit_transform(preprocessed_corpus)
         self._is_fit = True
@@ -77,6 +119,14 @@ class TranscriptProcessingPipeline:
         return pd.DataFrame(vectorized_corpus.toarray(), columns=self.vectorizer.get_feature_names())
 
     def transform(self, corpus):
+        """
+        Transform any corpus of text after self.fit_transform has already been called on an instance of this class.
+
+        :param list corpus: List of strings each containing a document.
+        :return: Prepared and vectorized corpus for use in modeling.
+        :rtype: pandas.DataFrame
+        """
+
         if not self._is_fit:
             raise ValueError("Must fit the ml_models before transforming!")
 

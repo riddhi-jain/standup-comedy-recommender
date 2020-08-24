@@ -1,3 +1,10 @@
+"""
+Contains function for inserting data to Mongo collections. If run as main script will create collections for the
+DataFrames saved as .pkl files from data_acquisition.py
+
+Stephen Kaplan, 2020-08-22
+"""
+
 import pandas as pd
 from app.db import connect_to_mongo
 from app.creds import USERNAME, PWD
@@ -5,12 +12,15 @@ from app.creds import USERNAME, PWD
 
 def insert_to_mongo(db, collection_name, columns, file_path=None, df=None):
     """
+    Creates (or replaces) a collection in a given mongo database.
 
-    :param db:
-    :param collection_name:
-    :param columns:
-    :param file_path:
-    :param df:
+    Must either specify `file_path` to a .pkl file containing a pandas DataFrame OR pass the DataFrame in directly.
+
+    :param pymongo.database.Database db: Database to put collections in. Must be connected through PyMongo Client.
+    :param str collection_name: Name of Mongo DB collection
+    :param list columns: Names of columns to map the data frame columns to.
+    :param str file_path: File path to .pkl file to persist to Mongo collection. Required if df not provided.
+    :param pandas.DataFrame df: Pandas DataFrame to persist to Mongo collection. Required if file_path not provided.
     """
     # create collections
     collection = db[collection_name]
