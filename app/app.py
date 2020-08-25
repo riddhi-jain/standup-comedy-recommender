@@ -4,9 +4,9 @@ import dill as pickle
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
-from app.db import load_mongo_collection_as_dataframe, connect_to_mongo
-from app.creds import USERNAME, PWD
-from app import nlp_pipeline
+from db import load_mongo_collection_as_dataframe, connect_to_mongo
+from creds import USERNAME, PWD
+import nlp_pipeline
 import sys
 sys.modules['nlp_pipeline'] = nlp_pipeline
 
