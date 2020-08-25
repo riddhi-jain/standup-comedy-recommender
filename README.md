@@ -1,4 +1,6 @@
-# Stand-up Comedy Recommender
+# Stand-Up Comedy Recommender
+
+Check out the app for this projected [here](https://standup-comedy-recommender.appspot.com/) (deployed on Google App Engine).
 
 This standup-comedy recommender is 100% powered by Natural Language Processing (NLP) techniques & unsupervised
 machine learning algorithms. None of the topics assigned to each comedy special were hard-coded; they were
@@ -13,7 +15,7 @@ algorithmically generated. <br><br>This project was created over a 2-week span d
     published on "Scraps from the Loft". I used <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/" target="_blank">Beautiful Soup</a> to
     scrape the transcripts. The raw text was then processed and stored in a
     <a href="https://www.mongodb.com/" target="_blank">Mongo</a> database hosted
-    remotely on an <a href="https://aws.amazon.com/ec2/" target="_blank">AWS EC2</a> instance.
+    remotely on an Amazon AWS EC2 instance.
 </p>
 
 <h5>NLP Processing Pipeline</h5>
