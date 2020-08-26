@@ -1,6 +1,6 @@
 # Stand-Up Comedy Recommender
 
-Check out the app for this projected [here](https://standup-comedy-recommender.appspot.com/) (deployed on Google App Engine).
+Check out the app for this projected [here](https://standup-comedy-recommender.appspot.com/){:target="_blank"} (deployed on Google App Engine).
 
 This standup-comedy recommender is 100% powered by Natural Language Processing (NLP) techniques & unsupervised
 machine learning algorithms. None of the topics assigned to each comedy special were hard-coded; they were
@@ -52,8 +52,8 @@ the top 10 most similar comedy specials are displayed as a recommendation.
 </p>
 
 #### Data Sources
-* Comedy Transcripts - [Scraps From The Loft](https://scrapsfromtheloft.com/stand-up-comedy-scripts/)
-* Comedy Special Poster Images - [OMDB API](https://www.omdbapi.com/)
+* Comedy Transcripts - [Scraps From The Loft](https://scrapsfromtheloft.com/stand-up-comedy-scripts/){:target="_blank"}
+* Comedy Special Poster Images - [OMDB API](https://www.omdbapi.com/){:target="_blank"}
 
 #### File Contents
 * The `analysis` directory contains scripts that were used to acquire data, set up a Mongo database, process the raw
