@@ -1,6 +1,6 @@
 # Stand-Up Comedy Recommender
 
-Check out the app for this projected [here](https://comedy-recommender.appspot.com/){:target="_blank"} (deployed on Google App Engine).
+Check out the app for this projected <a href="https://comedy-recommender.appspot.com" target="_blank">here</a> (deployed on Google App Engine).
 
 This standup-comedy recommender is 100% powered by Natural Language Processing (NLP) techniques & unsupervised
 machine learning algorithms. None of the topics assigned to each comedy special were hard-coded; they were
