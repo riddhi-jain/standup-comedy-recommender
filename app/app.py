@@ -85,3 +85,7 @@ def search():
                            dropdown_options=['Observational', 'Black Culture', 'British & Australian',
                                              'Political', 'Immigrant Upbringing', 'Relationships & Sex'],
                            search_text=search_term)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
