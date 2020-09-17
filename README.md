@@ -52,8 +52,8 @@ the top 10 most similar comedy specials are displayed as a recommendation.
 </p>
 
 #### Data Sources
-* Comedy Transcripts - [Scraps From The Loft](https://scrapsfromtheloft.com/stand-up-comedy-scripts/){:target="_blank"}
-* Comedy Special Poster Images - [OMDB API](https://www.omdbapi.com/){:target="_blank"}
+* Comedy Transcripts - [Scraps From The Loft](https://scrapsfromtheloft.com/stand-up-comedy-scripts/)
+* Comedy Special Poster Images - [OMDB API](https://www.omdbapi.com/)
 
 #### File Contents
 * The `analysis` directory contains scripts that were used to acquire data, set up a Mongo database, process the raw
