@@ -6,10 +6,11 @@ import numpy as np
 
 from app.db import load_mongo_collection_as_dataframe, connect_to_mongo
 from app.creds import USERNAME, PWD
-from app import nlp_pipeline
-import sys
-sys.modules['nlp_pipeline'] = nlp_pipeline
 
+import sys
+from app import nlp_pipeline
+
+sys.modules['nlp_pipeline'] = nlp_pipeline
 
 # initialize flask app
 app = Flask(__name__, static_folder='static', template_folder='templates')
