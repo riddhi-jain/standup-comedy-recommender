@@ -1,6 +1,6 @@
 # Stand-Up Comedy Recommender
 
-Check out the app for this projected <a href="https://comedy-recommender.appspot.com" target="_blank">here</a> (deployed on Google App Engine).
+Check out the app for this project <a href="https://standup-comedy-recommender.herokuapp.com/" target="_blank">here</a> deployed on ~~Google App Engine~~ Heroku (migrated because it was cheaper).
 
 This standup-comedy recommender is 100% powered by Natural Language Processing (NLP) techniques & unsupervised
 machine learning algorithms. None of the topics assigned to each comedy special were hard-coded; they were
@@ -59,7 +59,7 @@ the top 10 most similar comedy specials are displayed as a recommendation.
 * The `analysis` directory contains scripts that were used to acquire data, set up a Mongo database, process the raw
   text, and fit machine learning models.
 * The `app` directory contains files used by the Flask application. `app.py` is the main file for the Flask app.
-* `presentation.pptx` contains the mock business presentation I made for the Metis course.
+* `heroku.yml` and `Dockerfile` are used for the Heroku deployment.
 
 #### Dependencies
 
