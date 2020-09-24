@@ -1,6 +1,7 @@
 # Stand-Up Comedy Recommender
 
 Check out the app for this project <a href="https://standup-comedy-recommender.herokuapp.com/" target="_blank">here</a> deployed on ~~Google App Engine~~ Heroku (migrated because it was cheaper).
+Read the blog post for this project <a href="https://stephenjkaplan.github.io/2020/09/18/standup-comedy-recommender/" target="_blank">here</a>.
 
 This standup-comedy recommender is 100% powered by Natural Language Processing (NLP) techniques & unsupervised
 machine learning algorithms. None of the topics assigned to each comedy special were hard-coded; they were
